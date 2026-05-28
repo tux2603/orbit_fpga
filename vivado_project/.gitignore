@@ -11,3 +11,4 @@ vivado_*.backup.*
 *.log
 *.str
 *.bda
+*.xsa
