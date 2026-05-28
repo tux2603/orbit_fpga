@@ -1,0 +1,13 @@
+.Xil/*
+orbit_fpga.runs/*
+orbit_fpga.ipdefs/*
+orbit_fpga.ip_user_files/*
+orbit_fpga.hw/*
+orbit_fpga.gen/*
+orbit_fpga.cache/*
+orbit_fpga.sim/*
+updatemem_*.backup.*
+vivado_*.backup.*
+*.log
+*.str
+*.bda
