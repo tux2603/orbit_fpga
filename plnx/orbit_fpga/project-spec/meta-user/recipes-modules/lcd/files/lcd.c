@@ -266,14 +266,9 @@ static int lcd_probe(struct platform_device *pdev) {
         return rc;
     }
 
-    ((char *)(lp->base_addr))[0] = 't';
-    ((char *)(lp->base_addr))[1] = 'e';
-    ((char *)(lp->base_addr))[2] = 's';
-    ((char *)(lp->base_addr))[3] = 't';
-
     // This is a bit scuffed, but it's okay
-    memcpy((void *)(lp->base_addr), (void *)("LCD driver init "), 16);
-    memcpy((void *)(lp->base_addr) + 16, (void *)("  complete!     "), 16);
+    memcpy((void *)(lp->base_addr), (void *)("   I'm a leaf   "), 16);
+    memcpy((void *)(lp->base_addr) + 16, (void *)("  on the wind.  "), 16);
 
     dev_info(dev, "lcd at 0x%08x-0x%08x mapped to 0x%08x\n",
         (unsigned int __force)lp->mem_start,
