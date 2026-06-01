@@ -316,7 +316,7 @@ static struct platform_driver lcd_driver = {
 
 
 static int __init lcd_init(void) {
-    printk("lcd: Hello module world.\n");
+    printk("lcd: Initializing driver\n");
 
     return platform_driver_register(&lcd_driver);
 }
@@ -324,7 +324,7 @@ static int __init lcd_init(void) {
 
 static void __exit lcd_exit(void) {
     platform_driver_unregister(&lcd_driver);
-    printk("lcd: Goodbye module world.\n");
+    printk("lcd: Exiting driver\n");
 }
 
 module_init(lcd_init);
