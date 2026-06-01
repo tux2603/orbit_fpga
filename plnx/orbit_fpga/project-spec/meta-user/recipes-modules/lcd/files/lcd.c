@@ -43,6 +43,9 @@ MODULE_DESCRIPTION
 
 #define DRIVER_NAME "lcd"
 
+#define NUM_ROWS 2
+#define NUM_COLS 16
+
 
 struct lcd_local {
     struct cdev cdev;
@@ -52,14 +55,103 @@ struct lcd_local {
     void __iomem *base_addr;
 };
 
+
 // initialize file operations
+
+// Seeks a specific position in the LCD character buffer
+loff_t lcd_llseek(struct file *lcd_file, loff_t offset, int whence) {
+    loff_t new_pos = 0;
+
+    switch (whence) {
+        case SEEK_SET:
+            new_pos = offset;
+            break;
+        case SEEK_CUR:
+            new_pos = lcd_file->f_pos + offset;
+            break;
+        case SEEK_END:
+            new_pos = (NUM_ROWS * NUM_COLS) + offset; // Total number of characters
+            break;
+        default:
+            return -EINVAL;
+    }
+
+    if (new_pos < 0 || new_pos >= (NUM_ROWS * NUM_COLS)) {
+        return -EINVAL;
+    }
+
+    lcd_file->f_pos = new_pos;
+    return new_pos;
+}
+
+int lcd_open(struct inode *inode, struct file *lcd_file) {
+    // Save the lcd_local data to the file's private data for later use
+    struct lcd_local *lp = container_of(inode->i_cdev, struct lcd_local, cdev);
+    lcd_file->private_data = lp;
+    return 0;
+}
+
+ssize_t lcd_read(struct file *lcd_file, char __user *buf, size_t count, loff_t *offset) {
+    if (*offset >= (NUM_ROWS * NUM_COLS)) {
+        return 0; // EOF
+    }
+
+    if (*offset + count > (NUM_ROWS * NUM_COLS)) {
+        count = (NUM_ROWS * NUM_COLS) - *offset; // Adjust count to available data
+    }
+
+    // Get the lcd_local data from the file's private data
+    struct lcd_local *lp = (struct lcd_local *)lcd_file->private_data;
+
+    if (copy_to_user(buf, ((char *)(lp->base_addr)) + *offset, count)) {
+        return -EFAULT;
+    }
+
+    *offset += count;
+    return count;    
+}
+
+// Writing will be a little bit weird. When we hit the end of the LCD buffer, we want to automatically wrap around to the beginning of the buffer
+static ssize_t lcd_write(struct file *lcd_file, const char __user *buf, size_t count, loff_t *offset) {
+    loff_t pos = *offset;
+
+    // Get the lcd_local data from the file's private data
+    struct lcd_local *lp = (struct lcd_local *)lcd_file->private_data;
+
+    // TODO: you could probably make this more efficient by working in chunks or skipping the data in the middle of very large writes
+    for (size_t i = 0; i < count; ++i) {
+        char c;
+
+        if (copy_from_user(&c, buf + i, 1)) {
+            return -EFAULT;
+        }
+
+        // Write the character to the LCD buffer
+        ((char *)(lp->base_addr))[pos] = c;
+
+        // Move to the next position, wrapping around if necessary
+        pos = (pos + 1) % (NUM_ROWS * NUM_COLS);
+    }
+
+    *offset = pos;
+    return count;
+}
+
 static const struct file_operations lcd_fops = {
-    .owner = THIS_MODULE
+    .owner = THIS_MODULE,
+    .llseek = lcd_llseek,
+    .read = lcd_read,
+    .write = lcd_write,
+    .open = lcd_open
 };
 
 static struct class *lcd_class;
 
-// Character device management stuff
+static int lcd_uevent(const struct device *dev, struct kobj_uevent_env *env) {
+    add_uevent_var(env, "DEVMODE=%#o", 0666);
+    return 0;
+}
+
 static int lcd_cdev_init(struct cdev *cdev, struct device *dev, dev_t *dev_node) {
     int rc = 0;
     struct device *subdev;
@@ -91,6 +183,7 @@ static int lcd_cdev_init(struct cdev *cdev, struct device *dev, dev_t *dev_node)
         return PTR_ERR(lcd_class);
     }
 
+    lcd_class->dev_uevent = lcd_uevent;
     subdev = device_create(lcd_class, NULL, *dev_node, NULL, DRIVER_NAME);
 
     if (IS_ERR(subdev)) {
@@ -172,6 +265,15 @@ static int lcd_probe(struct platform_device *pdev) {
         dev_set_drvdata(dev, NULL);
         return rc;
     }
+
+    ((char *)(lp->base_addr))[0] = 't';
+    ((char *)(lp->base_addr))[1] = 'e';
+    ((char *)(lp->base_addr))[2] = 's';
+    ((char *)(lp->base_addr))[3] = 't';
+
+    // This is a bit scuffed, but it's okay
+    memcpy((void *)(lp->base_addr), (void *)("LCD driver init "), 16);
+    memcpy((void *)(lp->base_addr) + 16, (void *)("  complete!     "), 16);
 
     dev_info(dev, "lcd at 0x%08x-0x%08x mapped to 0x%08x\n",
         (unsigned int __force)lp->mem_start,
