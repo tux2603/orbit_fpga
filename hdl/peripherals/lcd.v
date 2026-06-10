@@ -56,9 +56,9 @@ module lcd #(
     end
 
     // LCD clock enable
-    localparam AXI_CLK_PERIOD = 9524; // Clock period in ps
-    localparam LCD_CLK_PERIOD = 10000000; // LCD clock period in ns
-    localparam LCD_CLK_DIV_MAX_COUNT = LCD_CLK_PERIOD / AXI_CLK_PERIOD + 1; // Clock divider for LCD clock
+    localparam AXI_CLK_PERIOD = 10; // Clock period in ns
+    localparam LCD_CLK_PERIOD = 1000; // LCD clock period in ns
+    localparam LCD_CLK_DIV_MAX_COUNT = LCD_CLK_PERIOD / AXI_CLK_PERIOD; // Clock divider for LCD clock
 
     reg lcd_clk_en = 1'b0;
     reg [$clog2(LCD_CLK_DIV_MAX_COUNT)-1:0] lcd_clk_div_counter = 'b0;
