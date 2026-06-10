@@ -10,5 +10,5 @@ set_property -dict {PACKAGE_PIN D20 IOSTANDARD LVCMOS33} [get_ports {buttons_in[
 set_property -dict {PACKAGE_PIN L20 IOSTANDARD LVCMOS33} [get_ports {buttons_in[2]}]
 set_property -dict {PACKAGE_PIN L19 IOSTANDARD LVCMOS33} [get_ports {buttons_in[3]}]
 
-set_property -dict {PACKAGE_PIN E17 IOSTANDARD LVCMOS33} [get_ports {Vp_Vn_vp_in}]
-set_property -dict {PACKAGE_PIN D18 IOSTANDARD LVCMOS33} [get_ports {Vp_Vn_vn_in}]
+set_property -dict {PACKAGE_PIN E17 IOSTANDARD LVCMOS33} [get_ports {Vaux1_v_p}]
+set_property -dict {PACKAGE_PIN D18 IOSTANDARD LVCMOS33} [get_ports {Vaux1_v_n}]

@@ -1,13 +1,13 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xE84FB2020D97BEDC",
+      "boundary_crc": "0x326A3181687FC9A4",
       "device": "xc7z020clg400-1",
       "gen_directory": "../../../../orbit_fpga.gen/sources_1/bd/orbit_fpga_tld",
       "name": "orbit_fpga_tld",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2025.2.1",
+      "tool_version": "2025.2",
       "validated": "true"
     },
     "design_tree": {
@@ -15,8 +15,9 @@
       "lcd_0": "",
       "axi_smc": "",
       "rst_ps7_0_100M": "",
+      "buttons_0": "",
       "xadc_wiz_0": "",
-      "buttons_0": ""
+      "clk_wiz_0": ""
     },
     "interface_ports": {
       "DDR": {
@@ -199,7 +200,7 @@
           }
         }
       },
-      "Vp_Vn": {
+      "Vaux1": {
         "mode": "Slave",
         "vlnv_bus_definition": "xilinx.com:interface:diff_analog_io:1.0",
         "vlnv": "xilinx.com:interface:diff_analog_io_rtl:1.0",
@@ -211,11 +212,11 @@
         },
         "port_maps": {
           "V_N": {
-            "physical_name": "Vp_Vn_v_n",
+            "physical_name": "Vaux1_v_n",
             "direction": "I"
           },
           "V_P": {
-            "physical_name": "Vp_Vn_v_p",
+            "physical_name": "Vaux1_v_p",
             "direction": "I"
           }
         }
@@ -1332,7 +1333,7 @@
             "value": "200"
           },
           "PCW_PERIPHERAL_BOARD_PRESET": {
-            "value": "None"
+            "value": "part0"
           },
           "PCW_PLL_BYPASSMODE_ENABLE": {
             "value": "0"
@@ -1991,8 +1992,8 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
+                "value": "104000000",
+                "value_src": "ip_prop"
               },
               "ID_WIDTH": {
                 "value": "0",
@@ -2078,9 +2079,13 @@
                 "value": "1",
                 "value_src": "auto"
               },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
+              },
               "CLK_DOMAIN": {
-                "value": "orbit_fpga_tld_processing_system7_0_0_FCLK_CLK0",
-                "value_src": "default_prop"
+                "value": "/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
               },
               "NUM_READ_THREADS": {
                 "value": "1",
@@ -2212,12 +2217,16 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
+                "value": "104000000",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
               },
               "CLK_DOMAIN": {
-                "value": "orbit_fpga_tld_processing_system7_0_0_FCLK_CLK0",
-                "value_src": "default_prop"
+                "value": "/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
               }
             }
           },
@@ -2253,7 +2262,7 @@
         "has_run_ip_tcl": "true",
         "parameters": {
           "NUM_MI": {
-            "value": "2"
+            "value": "3"
           },
           "NUM_SI": {
             "value": "1"
@@ -2274,11 +2283,12 @@
             },
             "bridges": [
               "M00_AXI",
-              "M01_AXI"
+              "M01_AXI",
+              "M02_AXI"
             ],
             "bd_attributes": {
               "BRIDGES": {
-                "value": "M00_AXI:M01_AXI",
+                "value": "M00_AXI:M01_AXI:M02_AXI",
                 "value_src": "auto"
               },
               "TYPE": {
@@ -2348,6 +2358,37 @@
                 "value_src": "default"
               }
             }
+          },
+          "M02_AXI": {
+            "mode": "Master",
+            "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_READ_THREADS": {
+                "value": "1"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_THREADS": {
+                "value": "1"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            },
+            "bd_attributes": {
+              "TYPE": {
+                "value": "interior",
+                "value_src": "default"
+              }
+            }
           }
         }
       },
@@ -2358,79 +2399,6 @@
         "xci_path": "ip\\orbit_fpga_tld_rst_ps7_0_100M_0\\orbit_fpga_tld_rst_ps7_0_100M_0.xci",
         "inst_hier_path": "rst_ps7_0_100M",
         "has_run_ip_tcl": "true"
-      },
-      "xadc_wiz_0": {
-        "vlnv": "xilinx.com:ip:xadc_wiz:3.3",
-        "ip_revision": "14",
-        "xci_name": "orbit_fpga_tld_xadc_wiz_0_0",
-        "xci_path": "ip\\orbit_fpga_tld_xadc_wiz_0_0\\orbit_fpga_tld_xadc_wiz_0_0.xci",
-        "inst_hier_path": "xadc_wiz_0",
-        "has_run_ip_tcl": "true",
-        "parameters": {
-          "ACQUISITION_TIME": {
-            "value": "10"
-          },
-          "ADC_CONVERSION_RATE": {
-            "value": "50"
-          },
-          "ADC_OFFSET_CALIBRATION": {
-            "value": "false"
-          },
-          "BIPOLAR_OPERATION": {
-            "value": "false"
-          },
-          "ENABLE_AXI4STREAM": {
-            "value": "true"
-          },
-          "ENABLE_EXTERNAL_MUX": {
-            "value": "true"
-          },
-          "ENABLE_RESET": {
-            "value": "true"
-          },
-          "ENABLE_VCCDDRO_ALARM": {
-            "value": "false"
-          },
-          "ENABLE_VCCPAUX_ALARM": {
-            "value": "false"
-          },
-          "ENABLE_VCCPINT_ALARM": {
-            "value": "false"
-          },
-          "EXTERNAL_MUX_CHANNEL": {
-            "value": "VP_VN"
-          },
-          "FIFO_DEPTH": {
-            "value": "32"
-          },
-          "INTERFACE_SELECTION": {
-            "value": "None"
-          },
-          "OT_ALARM": {
-            "value": "false"
-          },
-          "SENSOR_OFFSET_CALIBRATION": {
-            "value": "false"
-          },
-          "SINGLE_CHANNEL_ACQUISITION_TIME": {
-            "value": "true"
-          },
-          "SINGLE_CHANNEL_ENABLE_CALIBRATION": {
-            "value": "true"
-          },
-          "SINGLE_CHANNEL_SELECTION": {
-            "value": "VP_VN"
-          },
-          "USER_TEMP_ALARM": {
-            "value": "false"
-          },
-          "VCCAUX_ALARM": {
-            "value": "false"
-          },
-          "VCCINT_ALARM": {
-            "value": "false"
-          }
-        }
       },
       "buttons_0": {
         "vlnv": "xilinx.com:module_ref:buttons:1.0",
@@ -2459,7 +2427,7 @@
                 "value_src": "constant"
               },
               "TID_WIDTH": {
-                "value": "0",
+                "value": "5",
                 "value_src": "constant"
               },
               "TUSER_WIDTH": {
@@ -2483,15 +2451,25 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
+                "value": "104000000",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
               },
               "CLK_DOMAIN": {
-                "value": "orbit_fpga_tld_processing_system7_0_0_FCLK_CLK0",
-                "value_src": "default_prop"
+                "value": "/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
               }
             },
             "port_maps": {
+              "TID": {
+                "physical_name": "s_axis_tid",
+                "direction": "I",
+                "left": "4",
+                "right": "0"
+              },
               "TDATA": {
                 "physical_name": "s_axis_tdata",
                 "direction": "I",
@@ -2522,15 +2500,15 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
+                "value": "104000000",
+                "value_src": "ip_prop"
               },
               "ID_WIDTH": {
                 "value": "0",
                 "value_src": "constant"
               },
               "ADDR_WIDTH": {
-                "value": "3",
+                "value": "4",
                 "value_src": "auto"
               },
               "AWUSER_WIDTH": {
@@ -2609,9 +2587,13 @@
                 "value": "1",
                 "value_src": "auto"
               },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
+              },
               "CLK_DOMAIN": {
-                "value": "orbit_fpga_tld_processing_system7_0_0_FCLK_CLK0",
-                "value_src": "default_prop"
+                "value": "/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
               },
               "NUM_READ_THREADS": {
                 "value": "1",
@@ -2635,7 +2617,7 @@
               "AWADDR": {
                 "physical_name": "s_axi_awaddr",
                 "direction": "I",
-                "left": "2",
+                "left": "3",
                 "right": "0"
               },
               "AWPROT": {
@@ -2689,7 +2671,7 @@
               "ARADDR": {
                 "physical_name": "s_axi_araddr",
                 "direction": "I",
-                "left": "2",
+                "left": "3",
                 "right": "0"
               },
               "ARPROT": {
@@ -2743,12 +2725,16 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
+                "value": "104000000",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
               },
               "CLK_DOMAIN": {
-                "value": "orbit_fpga_tld_processing_system7_0_0_FCLK_CLK0",
-                "value_src": "default_prop"
+                "value": "/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
               }
             }
           },
@@ -2775,12 +2761,16 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
-                "value_src": "user_prop"
+                "value": "104000000",
+                "value_src": "ip_prop"
+              },
+              "PHASE": {
+                "value": "0.0",
+                "value_src": "ip_prop"
               },
               "CLK_DOMAIN": {
-                "value": "orbit_fpga_tld_processing_system7_0_0_FCLK_CLK0",
-                "value_src": "default_prop"
+                "value": "/clk_wiz_0_clk_out1",
+                "value_src": "ip_prop"
               }
             }
           },
@@ -2800,13 +2790,90 @@
             "right": "0"
           }
         }
+      },
+      "xadc_wiz_0": {
+        "vlnv": "xilinx.com:ip:xadc_wiz:3.3",
+        "ip_revision": "13",
+        "xci_name": "orbit_fpga_tld_xadc_wiz_0_1",
+        "xci_path": "ip\\orbit_fpga_tld_xadc_wiz_0_1\\orbit_fpga_tld_xadc_wiz_0_1.xci",
+        "inst_hier_path": "xadc_wiz_0",
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "ADC_CONVERSION_RATE": {
+            "value": "1000"
+          },
+          "DCLK_FREQUENCY": {
+            "value": "104"
+          },
+          "ENABLE_AXI4STREAM": {
+            "value": "true"
+          },
+          "ENABLE_VBRAM_ALARM": {
+            "value": "false"
+          },
+          "ENABLE_VCCDDRO_ALARM": {
+            "value": "false"
+          },
+          "ENABLE_VCCPAUX_ALARM": {
+            "value": "false"
+          },
+          "ENABLE_VCCPINT_ALARM": {
+            "value": "false"
+          },
+          "OT_ALARM": {
+            "value": "false"
+          },
+          "SINGLE_CHANNEL_SELECTION": {
+            "value": "VAUXP1_VAUXN1"
+          },
+          "USER_TEMP_ALARM": {
+            "value": "false"
+          },
+          "VCCAUX_ALARM": {
+            "value": "false"
+          },
+          "VCCINT_ALARM": {
+            "value": "false"
+          }
+        }
+      },
+      "clk_wiz_0": {
+        "vlnv": "xilinx.com:ip:clk_wiz:6.0",
+        "ip_revision": "17",
+        "xci_name": "orbit_fpga_tld_clk_wiz_0_0",
+        "xci_path": "ip\\orbit_fpga_tld_clk_wiz_0_0\\orbit_fpga_tld_clk_wiz_0_0.xci",
+        "inst_hier_path": "clk_wiz_0",
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "CLKOUT1_JITTER": {
+            "value": "129.027"
+          },
+          "CLKOUT1_PHASE_ERROR": {
+            "value": "99.281"
+          },
+          "CLKOUT1_REQUESTED_OUT_FREQ": {
+            "value": "104.000"
+          },
+          "MMCM_CLKFBOUT_MULT_F": {
+            "value": "9.750"
+          },
+          "MMCM_CLKOUT0_DIVIDE_F": {
+            "value": "9.375"
+          },
+          "RESET_PORT": {
+            "value": "resetn"
+          },
+          "RESET_TYPE": {
+            "value": "ACTIVE_LOW"
+          }
+        }
       }
     },
     "interface_nets": {
-      "Vp_Vn_0_1": {
+      "Vaux1_1": {
         "interface_ports": [
-          "Vp_Vn",
-          "xadc_wiz_0/Vp_Vn"
+          "Vaux1",
+          "xadc_wiz_0/Vaux1"
         ]
       },
       "axi_smc_M00_AXI": {
@@ -2819,6 +2886,12 @@
         "interface_ports": [
           "axi_smc/M01_AXI",
           "buttons_0/s_axi"
+        ]
+      },
+      "axi_smc_M02_AXI": {
+        "interface_ports": [
+          "xadc_wiz_0/s_axi_lite",
+          "axi_smc/M02_AXI"
         ]
       },
       "processing_system7_0_DDR": {
@@ -2847,10 +2920,29 @@
       }
     },
     "nets": {
-      "buttons_in_0_1": {
+      "buttons_in_1": {
         "ports": [
           "buttons_in",
           "buttons_0/buttons_in"
+        ]
+      },
+      "clk_wiz_0_clk_out1": {
+        "ports": [
+          "clk_wiz_0/clk_out1",
+          "rst_ps7_0_100M/slowest_sync_clk",
+          "processing_system7_0/M_AXI_GP0_ACLK",
+          "axi_smc/aclk",
+          "xadc_wiz_0/s_axis_aclk",
+          "xadc_wiz_0/s_axi_aclk",
+          "lcd_0/s_axi_aclk",
+          "buttons_0/s_axi_aclk",
+          "buttons_0/s_axis_aclk"
+        ]
+      },
+      "clk_wiz_0_locked": {
+        "ports": [
+          "clk_wiz_0/locked",
+          "rst_ps7_0_100M/dcm_locked"
         ]
       },
       "lcd_0_lcd_data": {
@@ -2874,28 +2966,22 @@
       "processing_system7_0_FCLK_CLK0": {
         "ports": [
           "processing_system7_0/FCLK_CLK0",
-          "processing_system7_0/M_AXI_GP0_ACLK",
-          "axi_smc/aclk",
-          "rst_ps7_0_100M/slowest_sync_clk",
-          "lcd_0/s_axi_aclk",
-          "xadc_wiz_0/s_axis_aclk",
-          "xadc_wiz_0/m_axis_aclk",
-          "buttons_0/s_axi_aclk",
-          "buttons_0/s_axis_aclk"
+          "clk_wiz_0/clk_in1"
         ]
       },
       "processing_system7_0_FCLK_RESET0_N": {
         "ports": [
           "processing_system7_0/FCLK_RESET0_N",
-          "rst_ps7_0_100M/ext_reset_in"
+          "rst_ps7_0_100M/ext_reset_in",
+          "clk_wiz_0/resetn"
         ]
       },
       "rst_ps7_0_100M_peripheral_aresetn": {
         "ports": [
           "rst_ps7_0_100M/peripheral_aresetn",
           "axi_smc/aresetn",
+          "xadc_wiz_0/s_axi_aresetn",
           "lcd_0/s_axi_aresetn",
-          "xadc_wiz_0/m_axis_resetn",
           "buttons_0/s_axi_aresetn",
           "buttons_0/s_axis_aresetn"
         ]
@@ -2915,6 +3001,11 @@
                 "address_block": "/lcd_0/s_axi/reg0",
                 "offset": "0x40000000",
                 "range": "128"
+              },
+              "SEG_xadc_wiz_0_Reg": {
+                "address_block": "/xadc_wiz_0/s_axi_lite/Reg",
+                "offset": "0x43C00000",
+                "range": "64K"
               }
             }
           }

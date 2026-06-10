@@ -3,7 +3,7 @@
 
 module buttons #(
         parameter C_S_AXI_DATA_WIDTH = 32,
-        parameter C_S_AXI_ADDR_WIDTH = 3, // 8 buttons, 1 byte each
+        parameter C_S_AXI_ADDR_WIDTH = 4, // 10 buttons, 1 byte each
         parameter C_S_AXIS_DATA_WIDTH = 16
     ) (
         // AXI4-Lite Slave Interface
@@ -33,12 +33,27 @@ module buttons #(
         input wire s_axis_aclk,
         input wire s_axis_aresetn,
         input wire [C_S_AXIS_DATA_WIDTH-1:0] s_axis_tdata,
-        output reg s_axis_tready = 1'b1,
+        input wire [4:0] s_axis_tid,
+        output wire s_axis_tready,
         input wire s_axis_tvalid,
 
         // GPIO inputs
         input wire [3:0] buttons_in
     );
+
+    // Values to check to see what button is being pressed
+    localparam RIGHT_MIN = 16'h0000;
+    localparam RIGHT_MAX = 16'h01FF;
+    localparam UP_MIN = 16'h2E00;
+    localparam UP_MAX = 16'h30FF;
+    localparam DOWN_MIN = 16'h6300;
+    localparam DOWN_MAX = 16'h65FF;
+    localparam LEFT_MIN = 16'h8800;
+    localparam LEFT_MAX = 16'h8AFF;
+    localparam SELECT_MIN = 16'hB000;
+    localparam SELECT_MAX = 16'hB2FF;
+    localparam NONE_MIN = 16'hDD00;
+    localparam NONE_MAX = 16'hDFFF;
 
     localparam NUM_REGS = (2**C_S_AXI_ADDR_WIDTH) / (C_S_AXI_DATA_WIDTH / 8);
     localparam ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
@@ -47,9 +62,7 @@ module buttons #(
     // AXI4-Lite registers
     reg [C_S_AXI_DATA_WIDTH-1:0] button_values[0:NUM_REGS-1];
 
-
-    // For now, just take the value from the ADC and expose it on the AXI4-Lite interface at address 0
-    // read in all four external buttons. expose these on the AXI4-Liter interface at address 4, 5, 6, and 7
+    reg [15:0] adc_value = 16'hFF;
 
     // Do some basic CDC on the button inputs to avoid metastability issues
     reg [3:0] buttons_cdc0;
@@ -65,28 +78,60 @@ module buttons #(
         end
     end
 
+
+    // AXI4 Stream coming into the module, just expose the value on the AXI4-Lite interface at address 0
+    always @(posedge s_axis_aclk) begin
+        if (!s_axis_aresetn) begin
+            adc_value <= 16'hFF;
+        end else if (s_axis_tvalid) begin
+            if (s_axis_tid == 5'h11) begin
+                adc_value <= s_axis_tdata;
+            end
+        end
+    end
+
+    assign s_axis_tready = 1'b1; // Always ready to accept data on the AXI4 Stream interface
+
+    
     // Update the button values in the AXI4-Lite registers
-    always @(posedge s_axi_aclk) begin
+    always @(posedge s_axi_aclk) begin : BTN_UPDATE
+        integer i;
+        
+        // Reset all button values to 0 on reset, otherwise update the button values based on the current state of the buttons
         if (!s_axi_aresetn) begin
-            button_values[1] <= 32'b0;
-        end else begin
-            button_values[1] <= {
+            for (i = 0; i < NUM_REGS; i = i + 1) begin
+                button_values[i] <= 32'b0;
+            end
+        end 
+        
+        else begin
+            button_values[0] <= {
                 buttons_cdc1[3] ? 8'h01 : 8'h00,
                 buttons_cdc1[2] ? 8'h01 : 8'h00,
                 buttons_cdc1[1] ? 8'h01 : 8'h00,
                 buttons_cdc1[0] ? 8'h01 : 8'h00
             };
-        end;
-    end
 
-    // AXI4 Stream coming into the module, just expose the value on the AXI4-Lite interface at address 0
-    always @(posedge s_axis_aclk) begin
-        if (!s_axis_aresetn) begin
-            button_values[0] <= 32'b0;
-        end else if (s_axis_tvalid) begin
-            button_values[0] <= {16'b0, s_axis_tdata};
+            if (adc_value >= RIGHT_MIN && adc_value <= RIGHT_MAX) begin
+                button_values[1] <= 32'h00000001; // Right button pressed
+            end else if (adc_value >= UP_MIN && adc_value <= UP_MAX) begin
+                button_values[1] <= 32'h00000100; // Up button pressed
+            end else if (adc_value >= DOWN_MIN && adc_value <= DOWN_MAX) begin
+                button_values[1] <= 32'h00010000; // Down button pressed
+            end else if (adc_value >= LEFT_MIN && adc_value <= LEFT_MAX) begin
+                button_values[1] <= 32'h01000000; // Left button pressed
+            end else begin
+                button_values[1] <= 32'h00000000; // No button in group pressed
+            end
+
+            if (adc_value >= SELECT_MIN && adc_value <= SELECT_MAX) begin
+                button_values[2] <= 32'h00000001; // Select button pressed
+            end else  begin
+                button_values[2] <= 32'h00000000; // No button in group pressed
+            end
         end
     end
+
 
     // We don't need AXI4-Lite write functionality for this module, so just return an error if the master tries to write to any address
     always @(posedge s_axi_aclk) begin
@@ -100,6 +145,7 @@ module buttons #(
     end
 
     assign s_axi_bresp = 2'b11; // SLVERR
+
 
     // Handle AXI4-Lite read transactions
     always @(posedge s_axi_aclk) begin
