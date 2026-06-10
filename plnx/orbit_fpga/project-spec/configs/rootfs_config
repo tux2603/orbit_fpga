@@ -3748,9 +3748,11 @@ CONFIG_Init-manager-sysvinit=y
 #
 # user packages 
 #
+CONFIG_buttons=y
 # CONFIG_gpio-demo is not set
 CONFIG_lcd=y
 # CONFIG_peekpoke is not set
+CONFIG_xadc-init=y
 
 #
 # PetaLinux RootFS Settings
