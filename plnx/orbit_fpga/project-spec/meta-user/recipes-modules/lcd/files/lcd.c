@@ -216,7 +216,7 @@ static int lcd_probe(struct platform_device *pdev) {
     // Allocate memory for the driver data
     lp = (struct lcd_local *) kmalloc(sizeof(struct lcd_local), GFP_KERNEL);
     if (!lp) {
-        dev_err(dev, "Cound not allocate lcd device\n");
+        dev_err(dev, "Could not allocate lcd device\n");
         return -ENOMEM;
     }
     dev_set_drvdata(dev, lp);
@@ -244,7 +244,7 @@ static int lcd_probe(struct platform_device *pdev) {
 
     lp->base_addr = ioremap(lp->mem_start, lp->mem_end - lp->mem_start + 1);
     if (!lp->base_addr) {
-        dev_err(dev, "lcd: Could not allocate iomem\n");
+        dev_err(dev, "Could not allocate iomem\n");
 
         // release resources and return error code
         release_mem_region(lp->mem_start, lp->mem_end - lp->mem_start + 1);
@@ -257,7 +257,7 @@ static int lcd_probe(struct platform_device *pdev) {
     rc = lcd_cdev_init(&(lp->cdev), dev, &(lp->dev_node));
 
     if (rc) {
-        dev_err(dev, "lcd: Could not initialize character device\n");
+        dev_err(dev, "Could not initialize character device\n");
 
         // release resources and return error code
         release_mem_region(lp->mem_start, lp->mem_end - lp->mem_start + 1);
@@ -287,7 +287,7 @@ static void lcd_remove(struct platform_device *pdev) {
     release_mem_region(lp->mem_start, lp->mem_end - lp->mem_start + 1);
     kfree(lp);
     dev_set_drvdata(dev, NULL);
-}
+}    
 
 #ifdef CONFIG_OF
 static struct of_device_id lcd_of_match[] = {

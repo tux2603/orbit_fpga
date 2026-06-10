@@ -1,4 +1,8 @@
 menu "user packages " 
+config buttons  
+	 bool "buttons"
+	 help
+	
 config gpio-demo  
 	 bool "gpio-demo"
 	 help
@@ -9,6 +13,10 @@ config lcd
 	
 config peekpoke  
 	 bool "peekpoke"
+	 help
+	
+config xadc-init  
+	 bool "xadc-init"
 	 help
 	
 endmenu
