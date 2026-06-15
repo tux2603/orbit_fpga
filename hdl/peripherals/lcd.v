@@ -51,7 +51,7 @@ module lcd #(
         // Initialize registers to zero
         integer i;
         for (i = 0; i < NUM_REGS; i = i + 1) begin
-            axi_data_array[i] = 32'b0;
+            axi_data_array[i] = 32'h20202020;
         end
     end
 
