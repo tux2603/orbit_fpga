@@ -657,7 +657,7 @@ CONFIG_nfs-utils=y
 #
 # git 
 #
-# CONFIG_git is not set
+CONFIG_git=y
 # CONFIG_git-bash-completion is not set
 # CONFIG_gitweb is not set
 # CONFIG_git-perltools is not set
@@ -2031,7 +2031,7 @@ CONFIG_run-postinsts=y
 #
 # protobuf
 #
-# CONFIG_protobuf is not set
+CONFIG_protobuf=y
 
 #
 # zlib 
@@ -2648,7 +2648,7 @@ CONFIG_python3-gitdb=y
 #
 # python3-setuptools 
 #
-# CONFIG_python3-setuptools is not set
+CONFIG_python3-setuptools=y
 # CONFIG_python3-setuptools-dev is not set
 # CONFIG_python3-setuptools-dbg is not set
 
@@ -3752,6 +3752,8 @@ CONFIG_buttons=y
 # CONFIG_gpio-demo is not set
 CONFIG_lcd=y
 # CONFIG_peekpoke is not set
+CONFIG_py-krpc=y
+CONFIG_py-protobuf=y
 CONFIG_xadc-init=y
 
 #

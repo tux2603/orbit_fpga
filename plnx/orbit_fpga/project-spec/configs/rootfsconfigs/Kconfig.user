@@ -15,6 +15,14 @@ config peekpoke
 	 bool "peekpoke"
 	 help
 	
+config py-krpc  
+	 bool "py-krpc"
+	 help
+	
+config py-protobuf  
+	 bool "py-protobuf"
+	 help
+	
 config xadc-init  
 	 bool "xadc-init"
 	 help

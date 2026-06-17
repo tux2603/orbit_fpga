@@ -6,3 +6,5 @@ CONFIG_peekpoke
 CONFIG_lcd
 CONFIG_buttons
 CONFIG_xadc-init
+CONFIG_py-krpc
+CONFIG_py-protobuf
