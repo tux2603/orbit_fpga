@@ -42,6 +42,7 @@ module buttons #(
     );
 
     // Values to check to see what button is being pressed
+    // TODO: the rangesfor left, down, and select are current;y not large enough, leading to some noise when the button is held
     localparam RIGHT_MIN = 16'h0000;
     localparam RIGHT_MAX = 16'h01FF;
     localparam UP_MIN = 16'h2E00;
